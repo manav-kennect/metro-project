@@ -1,0 +1,15 @@
+{
+  "@vite/client": {
+    "isEntry": true,
+    "file": "@vite/client",
+    "css": [],
+    "module": true,
+    "resourceType": "script"
+  },
+  "C:/Users/manav_cmcfada/Kennect/metro-project/metro-frontend/node_modules/nuxt/dist/app/entry.js": {
+    "resourceType": "script",
+    "module": true,
+    "isEntry": true,
+    "file": "C:/Users/manav_cmcfada/Kennect/metro-project/metro-frontend/node_modules/nuxt/dist/app/entry.js"
+  }
+}

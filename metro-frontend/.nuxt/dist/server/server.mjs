@@ -1,0 +1,1 @@
+export { default } from "file:///C:/Users/manav_cmcfada/Kennect/metro-project/metro-frontend/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
