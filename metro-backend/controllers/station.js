@@ -4,7 +4,6 @@ let  stationCachedData =  require('../utility/cached-data.js')
 const dijkstra = require('../utility/utility.js')
 
 exports.addStationDetails = async ()=> {
-    const client = connect2DB();
     try {
         await client.connect();
         const db = client.db('metro');
@@ -21,13 +20,10 @@ exports.addStationDetails = async ()=> {
       catch (err){
         console.log(err)
       }
-      finally {
-        client.close();
-      }
+     
 }
 
 exports.getStationsDetails = async () => {
-    const client = connect2DB();
     try {
         await client.connect();
         const db = client.db('metro');
@@ -40,13 +36,9 @@ exports.getStationsDetails = async () => {
         console.log(err)
         return []
       }
-      finally {
-        client.close();
-      }
 }
 
 exports.ticketFareCalculator = async (src,dest)=> {
-    const client = connect2DB();
     try {
         if(Object.keys(stationCachedData).length > 0 ) {
             console.log("Inside CACHED DAtA")
@@ -111,7 +103,5 @@ exports.ticketFareCalculator = async (src,dest)=> {
       catch (err){
         console.log(err)
       }
-      finally {
-        client.close();
-      }
+     
 }

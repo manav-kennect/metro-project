@@ -1,7 +1,6 @@
 const {connect2DB} = require('../db-config.js')
 module.exports = {
     addUser: async (userData)=>{
-        const client = connect2DB();
     try {
         await client.connect();
         const db = client.db('metro');
@@ -11,9 +10,6 @@ module.exports = {
       } 
       catch (err){
         console.log(err)
-      }
-      finally {
-        client.close();
       }
     }
 }

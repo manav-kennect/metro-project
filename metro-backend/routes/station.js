@@ -5,7 +5,7 @@ stationRouter.get('/station',(req,res,next) => {
     addStationDetails();
 })
 
-stationRouter.get('/station-list',jwtVerify,async (req,res,next) => {
+stationRouter.get('/station-list',async (req,res,next) => {
     try{
    const station_details = await getStationsDetails();
    if(station_details.length !== 0) {
@@ -26,9 +26,9 @@ stationRouter.get('/ticket-price/',async (req,res,next) => {
     if(req.query.src && req.query.des) {
     const price = await ticketFareCalculator(req.query.src,req.query.des);
     console.log(price)
-    res.send({'ticketPrice':price})}
+    res.json({ok:true,'ticketPrice':price})}
     else {
-        res.status(505).send({'ticketPrice': "Unable to find path For this route"})
+        res.json({ok:false,'ticketPrice': "Unable to find price For this route"})
     }
 })
 module.exports= stationRouter;

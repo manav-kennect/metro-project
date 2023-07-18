@@ -47,7 +47,6 @@
  
  module.exports = {
      issueToken: async data => {
-        const client = connect2DB();
         await client.connect();
         const db = client.db('metro');
          let query = {
@@ -63,7 +62,7 @@
          console.log("INSIDE ISSUE")
          let cResult = await db.collection('auth_details').findOne(query, { 'projection': projection });
          if (cResult) {
-            return {token: private.encode({'username':cResult.username,'role': cResult.role,'_id': String(cResult._id)})};
+            return {token: private.encode({'username':cResult.username,'role': cResult.role,'_id': String(cResult._id)}),user:cResult.role};
          } else {
              return { ok: false, message: 'No such user or maybe wrong password' };
          }
