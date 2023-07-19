@@ -7,6 +7,7 @@ const stationRouter = require('../metro-backend/routes/station.js')
 const commonRouter = require('../metro-backend/routes/common.js')
 const userRouter = require('../metro-backend/routes/user.js')
 const authRouter = require('../metro-backend/routes/auth.js')
+const adminRouter = require('../metro-backend/routes/admin.js')
 
 const app = express();
 global.client = connect2DB();
@@ -15,6 +16,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api',ticketRouter)
+app.use('/api',adminRouter)
 app.use('/api',commonRouter)
 app.use('/api',stationRouter)
 app.use('/api',userRouter)

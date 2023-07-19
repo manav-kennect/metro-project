@@ -1,10 +1,10 @@
 const ticketRouter = require('express').Router();
-const {addTicketsDetails,getTicketDetails,getTicketDetailsByUser,updateTicketDetails} = require('../controllers/tickets.js')
+const {addTicketsDetails,getTicketDetailsByUser,updateTicketDetails} = require('../controllers/tickets.js')
 const {jwtVerify} = require('../middlewares/auth.js')
 
-ticketRouter.post('/tickets',(req,res,next) => {
+ticketRouter.post('/tickets',async (req,res,next) => {
   try {
-    const result = addTicketsDetails(req.body)
+    const result = await addTicketsDetails(req.body)
     console.log(result,"ADD TICKES")
     res.json({ok:true,result:result})
     // var instance = new Razorpay({
@@ -40,8 +40,8 @@ ticketRouter.post('/tickets',(req,res,next) => {
   ticketRouter.put('/tickets/admin',jwtVerify,async (req,res,next)=>{
     try{
       if(req.user.role === "admin") {
-    const result = await updateTicketDetails(req.body.ticket_id,req.body)
-    res.json({ok:true, result:result})
+    const result = await updateTicketDetails(req.body.ticket_id)
+    res.json(result)
       }
       else {
         res.json({ok:false,result:"Unauthorized"})

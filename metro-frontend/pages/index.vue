@@ -41,20 +41,23 @@
                   <v-col class="text-h6 pa-2">
                     From
                   </v-col>
-                  <v-cols class="text-h6 pa-2">
+                  <v-col class="text-h6 pa-2">
                     Destination
-                  </v-cols>
+                  </v-col>
                 </v-row>
                 <v-row>
                   <v-col class="text-h6 pa-2">
                     {{ source }}
                   </v-col>
-                  <v-cols class="text-h6 pa-2">
+                  <v-col class="text-h6 pa-2">
                     {{ destination }}
-                  </v-cols>
+                  </v-col>
                 </v-row>
                 <v-row>
-                  Valid Upto 10-08-2000
+                    Created At <span style="font-size: 12px; font-weight: bold; margin-left: 10px; margin-top: 3px;">{{ created_at }}</span>
+                    </v-row>
+                <v-row>
+                  Valid Upto <span style="font-size: 12px; font-weight: bold; margin-left: 10px; margin-top: 3px;">{{ valid_upto }}</span>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -83,44 +86,50 @@
       <v-list-subheader inset>Tickets</v-list-subheader>
 
       <v-list-item v-for="ticket in tickets" :key="ticket.ticket_id" :title="ticket.ticket_id" :subtitle="ticket.status">
-        <!-- <template v-slot:prepend>
-          <v-avatar color="grey-lighten-1">
-            <v-icon color="white">mdi-ticket</v-icon>
-          </v-avatar>
-        </template> -->
-
-        <template v-slot:append>
-          <v-btn color="grey-lighten-1" variant="text" :append-icon="mdiInformation" @click="viewTicket()">
-            <v-dialog transition="dialog-bottom-transition" width="auto" v-model="viewTicketDialog" >
+        <template v-slot:append  :key="ticket.ticket_id">
+          <v-btn color="grey-lighten-1" variant="text" :append-icon="mdiInformation" @click="viewTicket(ticket)" :key="ticket.ticket_id">
+            <v-dialog transition="dialog-bottom-transition" width="auto" v-model="viewTicketDialog" :key="ticket.ticket_id" >
               <v-card min-width="420">
                 <v-toolbar color="primary" title="Your Ticket Details"></v-toolbar>
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      Ticket Id: {{ ticket.ticket_id }}
+                      Ticket Id: {{ dialogTicket.ticket_id }}
                     </v-row>
                     <v-row>
                       <v-col class="text-h6 pa-2">
                         From
                       </v-col>
-                      <v-cols class="text-h6 pa-2">
+                      <v-col class="text-h6 pa-2">
                         Destination
-                      </v-cols>
+                      </v-col>
                     </v-row>
                     <v-row>
                       <v-col class="text-h6 pa-2">
-                        {{ ticket.source }}
+                        {{ dialogTicket.source }}
                       </v-col>
-                      <v-cols class="text-h6 pa-2">
-                        {{ ticket.destination }}
-                      </v-cols>
+                      <v-col class="text-h6 pa-2">
+                        {{ dialogTicket.destination }}
+                      </v-col>
                     </v-row>
                     <v-row>
-                      Valid Upto 10-08-2000
+                    Created At <span style="font-size: 12px; font-weight: bold; margin-left: 10px; margin-top: 3px;">{{ dialogTicket.created_at }}</span>
                     </v-row>
+                <v-row>
+                  Valid Upto <span style="font-size: 12px; font-weight: bold; margin-left: 10px; margin-top: 3px;">{{ dialogTicket.valid_upto }}</span>
+                </v-row>
                   </v-container>
                 </v-card-text>
                 <v-card-actions class="justify-end">
+                  <v-autocomplete v-if="dialogTicket.status === 'active'" v-model="check_in_station" :items="items" item-title="station_name" item-value="station_id"
+                     label="Check In From">
+                  </v-autocomplete>
+                  <v-autocomplete v-if="dialogTicket.status === 'checkedin'" v-model="check_out_station" :items="items" item-title="station_name" item-value="station_id"
+                     label="Check Out From">
+                  </v-autocomplete>
+                  <v-btn v-if="dialogTicket.status === 'active'" variant="text" @click="checkInTicket(dialogTicket)">Check In</v-btn>
+                  <v-btn  v-else-if="dialogTicket.status === 'checkedin'" variant="text" @click="checkOutTicket(dialogTicket)">Check Out</v-btn>
+                  <v-btn  v-else variant="text">Checked Out</v-btn>
                   <v-btn variant="text" @click="viewTicketDialog = false">Close</v-btn>
                 </v-card-actions>
               </v-card>
@@ -136,7 +145,14 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { mdiInformation } from '@mdi/js'
+import moment from 'moment';
+const now = moment('Tuesday, July 18th 2023, 7:32:19 pm',"dddd, MMMM Do YYYY, h:mm:ss a")
+const twoHours = moment().add(2, 'hours');
+console.log(twoHours.diff(now,'hours'))
 
+// console.log(now.format("dddd, MMMM Do YYYY, h:mm:ss a"),now)
+const check_in_station = ref("")
+const check_out_station = ref("")
 const items = ref([]);
 const tickets = ref([])
 const source_station = ref("");
@@ -149,18 +165,50 @@ const destined_station = ref("");
 const isUpdating = ref(false);
 const timeout = ref(null);
 const dialog = ref(false);
+const dialogTicket = ref({});
+const created_at = ref("")
+const valid_upto = ref("")
 
-function viewTicket() {
+function viewTicket(ticket) {
+  dialogTicket.value = ticket;
   viewTicketDialog.value = true
 }
 
+async function checkInTicket(ticket) {
+  console.log(ticket,"INSIDE CHECK IN TICKER")
+  await axios.post(`http://localhost:11001/api/checkin?cs=${check_in_station.value}`,ticket).then(res=>{
+    console.log(res.data)
+    if(res.data.ok == true) {
+      alert("Successfully Checked In")
+    }
+    else {
+      alert(res.data.details)
+    }
+  })
+}
+
+async function  checkOutTicket(ticket) {
+  console.log(check_out_station.value)
+  await axios.post(`http://localhost:11001/api/checkout?cs=${check_out_station.value}`,ticket).then(res=>{
+    if(res.data.ok == true) {
+      alert("Successfully Checked Out")
+    }
+    else {
+      alert(res.data.details)
+    }
+  })
+}
 async function payTicket() {
   const ticket_data = {
     ticket_id: ticket_id.value,
     source: source.value,
+    source_id: source_station.value,
+    destination_id: destined_station.value,
     destination: destination.value,
     userid: "manav",
-    status: "active"
+    status: "active",
+    created_at: created_at.value,
+    valid_upto: valid_upto.value,
   }
   await axios.post('http://localhost:11001/api/tickets', ticket_data).then(res => {
     if (res.data.ok == true) {
@@ -201,6 +249,8 @@ watch(destined_station, () => {
 async function getTicketDetails() {
   if (source.value && destination.value) {
     ticket_id.value = String(Math.random())
+    created_at.value = moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
+    valid_upto.value = moment().add(2, 'hours').format("dddd, MMMM Do YYYY, h:mm:ss a");
     isUpdating.value = true;
     await axios.get(`http://localhost:11001/api/ticket-price?src=${source_station.value}&des=${destined_station.value}`).then(res => {
       if (res.data.ok === true) {
@@ -219,10 +269,9 @@ onMounted(async () => {
   await axios.get('http://localhost:11001/api/station-list/').then(res => {
     items.value = res.data
   })
-
   await axios.get('http://localhost:11001/api/tickets?user=manav').then(res => {
     tickets.value = res.data.result
-    console.log(tickets.value)
+    console.log(tickets.value,"GGGGGGGGGGGGGGGGGG")
   })
 })
 </script>

@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-navigation-drawer rail  v-model="drawer" :rail="miniVariant" app>
+    <v-navigation-drawer rail  v-model="drawer" expand-on-hover app>
       <v-list nav>
         <v-list-item v-for="(item, i) in items" :key="i" :prepend-icon="item.icon" :title="item.title" :to="item.to">
         </v-list-item>
