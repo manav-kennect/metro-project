@@ -7,19 +7,8 @@ exports.checkInTicket = async (
   created_at
 ) => {
   if (source === checkin_station) {
-    const created_time = created_at;
-    // console.log(
-    //   moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a")
-    //     .add(20, "minutes")
-    //     .diff(moment(created_time, "dddd, MMMM Do YYYY, h:mm:ss a"), "minutes")
-    // );
     if (
-      moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a")
-        .add(20, "minutes")
-        .diff(
-          moment(created_time, "dddd, MMMM Do YYYY, h:mm:ss a"),
-          "minutes"
-        ) > 0
+      moment().isBefore(moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a").add(20, "minutes"))
     ) {
       console.log("INSIDE CHEKC INNNNNN");
       try {
@@ -59,13 +48,8 @@ exports.checkOutTicket = async (
       ) {
         const created_time = created_at;
         if (
-          moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a")
-            .add(20, "minutes")
-            .diff(
-              moment(created_time, "dddd, MMMM Do YYYY, h:mm:ss a"),
-              "minutes"
-            ) > 0
-        ) {
+          moment().isBefore(moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a").add(2, "hours"))       
+           ) {
           console.log("INSIDE CHEKC OUTTTTT");
           await client.connect();
           const db = client.db("metro");
@@ -104,12 +88,7 @@ exports.checkOutTicket = async (
       ) {
         const created_time = created_at;
         if (
-          moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a")
-            .add(2, "hours")
-            .diff(
-              moment(created_time, "dddd, MMMM Do YYYY, h:mm:ss a"),
-              "minutes"
-            ) > 0
+          moment().isBefore(moment(created_at, "dddd, MMMM Do YYYY, h:mm:ss a").add(2, "hours"))  
         ) {
           console.log("INSIDE CHEKC INNNNNN");
           await db

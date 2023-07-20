@@ -59,11 +59,12 @@ import axios from 'axios';
     const dialogTicket = ref({});
     const input_tikcet_id = ref("")
     const viewTicketDialog = ref(false)
+    const myToken = ref("")
 
     async function updateTicket(ticket) {
-        await axios.put(`http://localhost:11001/api/tickets/admin`,ticket,{headers:{'authorization': myToken,'Content-Type': 'application/json'}}).then(res=>{
+        await axios.put(`http://localhost:11001/api/tickets/admin`,ticket,{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res=>{
     if(res.data.ok == true) {
-      alert("Successfully Checked In")
+      alert("Successfully Updated Ticket")
     }
     else {
       alert(res.data.result)
@@ -84,7 +85,8 @@ import axios from 'axios';
         }
     }
     onMounted(()=>{
-        const myToken = JSON.parse(localStorage.getItem('employee_token'))['token']
+        myToken.value = JSON.parse(localStorage.getItem('employee_token'))['token']
+        console.log(typeof(myToken.value))
         if(JSON.parse(localStorage.getItem('employee_token'))['user'] === 'admin') {
             navigateTo('/admin')
         }

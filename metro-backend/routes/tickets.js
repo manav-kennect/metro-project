@@ -39,6 +39,7 @@ ticketRouter.post('/tickets',async (req,res,next) => {
 
   ticketRouter.put('/tickets/admin',jwtVerify,async (req,res,next)=>{
     try{
+      
       if(req.user.role === "admin") {
     const result = await updateTicketDetails(req.body.ticket_id)
     res.json(result)
