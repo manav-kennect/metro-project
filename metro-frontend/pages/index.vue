@@ -177,7 +177,7 @@ async function checkInTicket(ticket) {
     console.log(res.data)
     if(res.data.ok == true) {
       alert("Successfully Checked In")
-      navigateTo('/')
+      viewTicketDialog.value = false
     }
     else {
       alert(res.data.details)
@@ -190,7 +190,7 @@ async function  checkOutTicket(ticket) {
   await axios.post(`http://localhost:11001/api/checkout?cs=${check_out_station.value}`,ticket,{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res=>{
     if(res.data.ok == true) {
       alert("Successfully Checked Out")
-      navigateTo('/')
+      viewTicketDialog.value = false
     }
     else {
       alert(res.data.details)
