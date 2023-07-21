@@ -12,6 +12,7 @@ const adminRouter = require('../metro-backend/routes/admin.js')
 const app = express();
 global.client = connect2DB();
 
+
 app.use(cors())
 app.use(express.json())
 

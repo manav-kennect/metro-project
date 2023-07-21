@@ -5,7 +5,7 @@ stationRouter.get('/station',(req,res,next) => {
     addStationDetails();
 })
 
-stationRouter.get('/station-list',async (req,res,next) => {
+stationRouter.get('/station-list',jwtVerify,async (req,res,next) => {
     try{
    const station_details = await getStationsDetails();
    if(station_details.length !== 0) {
@@ -21,7 +21,7 @@ stationRouter.get('/station-list',async (req,res,next) => {
    }
 })
 
-stationRouter.get('/ticket-price/',async (req,res,next) => {
+stationRouter.get('/ticket-price/',jwtVerify,async (req,res,next) => {
     console.log(Object.values(req.query).length,"QUERY")
     if(req.query.src && req.query.des) {
     const price = await ticketFareCalculator(req.query.src,req.query.des);

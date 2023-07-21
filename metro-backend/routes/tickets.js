@@ -2,7 +2,7 @@ const ticketRouter = require('express').Router();
 const {addTicketsDetails,getTicketDetailsByUser,updateTicketDetails} = require('../controllers/tickets.js')
 const {jwtVerify} = require('../middlewares/auth.js')
 
-ticketRouter.post('/tickets',async (req,res,next) => {
+ticketRouter.post('/tickets',jwtVerify,async (req,res,next) => {
   try {
     const result = await addTicketsDetails(req.body)
     console.log(result,"ADD TICKES")
@@ -27,7 +27,7 @@ ticketRouter.post('/tickets',async (req,res,next) => {
   }
     })
 
-  ticketRouter.get('/tickets',async (req,res,next)=>{
+  ticketRouter.get('/tickets',jwtVerify,async (req,res,next)=>{
     try{
     const result = await getTicketDetailsByUser(req.query.user)
     res.json({ok:true, result:result})
@@ -39,7 +39,7 @@ ticketRouter.post('/tickets',async (req,res,next) => {
 
   ticketRouter.put('/tickets/admin',jwtVerify,async (req,res,next)=>{
     try{
-      
+
       if(req.user.role === "admin") {
     const result = await updateTicketDetails(req.body.ticket_id)
     res.json(result)

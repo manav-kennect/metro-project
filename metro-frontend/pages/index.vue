@@ -71,12 +71,8 @@
 
     </v-card-actions>
   </v-card>
-  <!-- <v-spacer></v-spacer> -->
-  <!-- <v-spacer></v-spacer> -->
   <v-card class="mx-auto" max-width="600">
     <v-toolbar color="secondary">
-      <!-- <v-btn variant="text" icon="mdi-menu"></v-btn> -->
-
       <v-toolbar-title>My Tickets</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -168,6 +164,7 @@ const dialog = ref(false);
 const dialogTicket = ref({});
 const created_at = ref("")
 const valid_upto = ref("")
+const myToken = ref('')
 
 function viewTicket(ticket) {
   dialogTicket.value = ticket;
@@ -176,10 +173,11 @@ function viewTicket(ticket) {
 
 async function checkInTicket(ticket) {
   console.log(ticket,"INSIDE CHECK IN TICKER")
-  await axios.post(`http://localhost:11001/api/checkin?cs=${check_in_station.value}`,ticket).then(res=>{
+  await axios.post(`http://localhost:11001/api/checkin?cs=${check_in_station.value}`,ticket,{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res=>{
     console.log(res.data)
     if(res.data.ok == true) {
       alert("Successfully Checked In")
+      navigateTo('/')
     }
     else {
       alert(res.data.details)
@@ -189,9 +187,10 @@ async function checkInTicket(ticket) {
 
 async function  checkOutTicket(ticket) {
   console.log(check_out_station.value)
-  await axios.post(`http://localhost:11001/api/checkout?cs=${check_out_station.value}`,ticket).then(res=>{
+  await axios.post(`http://localhost:11001/api/checkout?cs=${check_out_station.value}`,ticket,{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res=>{
     if(res.data.ok == true) {
       alert("Successfully Checked Out")
+      navigateTo('/')
     }
     else {
       alert(res.data.details)
@@ -210,7 +209,7 @@ async function payTicket() {
     created_at: created_at.value,
     valid_upto: valid_upto.value,
   }
-  await axios.post('http://localhost:11001/api/tickets', ticket_data).then(res => {
+  await axios.post('http://localhost:11001/api/tickets', ticket_data,{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res => {
     if (res.data.ok == true) {
       alert("Payment Successfull")
       dialog.value = false
@@ -252,7 +251,7 @@ async function getTicketDetails() {
     created_at.value = moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
     valid_upto.value = moment().add(2, 'hours').format("dddd, MMMM Do YYYY, h:mm:ss a");
     isUpdating.value = true;
-    await axios.get(`http://localhost:11001/api/ticket-price?src=${source_station.value}&des=${destined_station.value}`).then(res => {
+    await axios.get(`http://localhost:11001/api/ticket-price?src=${source_station.value}&des=${destined_station.value}`,{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res => {
       if (res.data.ok === true) {
         isUpdating.value = false
         console.log(res.data)
@@ -266,10 +265,12 @@ async function getTicketDetails() {
   }
 }
 onMounted(async () => {
-  await axios.get('http://localhost:11001/api/station-list/').then(res => {
+  myToken.value = JSON.parse(localStorage.getItem('employee_token'))['token']
+  console.log(myToken.value, "TOKENNNNNNNNNN")
+  await axios.get('http://localhost:11001/api/station-list/',{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res => {
     items.value = res.data
   })
-  await axios.get('http://localhost:11001/api/tickets?user=manav').then(res => {
+  await axios.get('http://localhost:11001/api/tickets?user=manav',{headers:{'authorization': myToken.value,'Content-Type': 'application/json'}}).then(res => {
     tickets.value = res.data.result
     console.log(tickets.value,"GGGGGGGGGGGGGGGGGG")
   })
